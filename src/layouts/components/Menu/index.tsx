@@ -5,7 +5,7 @@ import { findAllBreadcrumb, getOpenKeys, handleRouter, searchRoute } from "@/uti
 import { setMenuList } from "@/redux/modules/menu/action";
 import { setBreadcrumbList } from "@/redux/modules/breadcrumb/action";
 import { setAuthRouter } from "@/redux/modules/auth/action";
-import { getMenuList } from "@/api/modules/login";
+// import { getMenuList } from "@/api/modules/login";
 import { connect } from "react-redux";
 import type { MenuProps } from "antd";
 import * as Icons from "@ant-design/icons";
@@ -72,19 +72,50 @@ const LayoutMenu = (props: any) => {
 	const getMenuData = async () => {
 		setLoading(true);
 		try {
-			const { data } = await getMenuList();
-			if (!data) return;
-			setMenuList(deepLoopFloat(data));
+			const customData = [
+				{
+					icon: "HomeOutlined",
+					path: "/home/index",
+					title: "首页"
+				},
+				{
+					icon: "AppstoreOutlined",
+					path: "/customTable/usersTable",
+					title: "用户管理"
+				},
+				{
+					icon: "AppstoreOutlined",
+					path: "/customTable/booksTable",
+					title: "图书管理"
+				}
+			];
+			setMenuList(deepLoopFloat(customData));
 			// 存储处理过后的所有面包屑导航栏到 redux 中
-			setBreadcrumbList(findAllBreadcrumb(data));
+			setBreadcrumbList(findAllBreadcrumb(customData));
 			// 把路由菜单处理成一维数组，存储到 redux 中，做菜单权限判断
-			const dynamicRouter = handleRouter(data);
+			const dynamicRouter = handleRouter(customData);
 			setAuthRouter(dynamicRouter);
-			setMenuListAction(data);
+			setMenuListAction(customData);
 		} finally {
 			setLoading(false);
 		}
 	};
+	// const getMenuData = async () => {
+	// 	setLoading(true);
+	// 	try {
+	// 		const { data } = await getMenuList();
+	// 		if (!data) return;
+	// 		setMenuList(deepLoopFloat(data));
+	// 		// 存储处理过后的所有面包屑导航栏到 redux 中
+	// 		setBreadcrumbList(findAllBreadcrumb(data));
+	// 		// 把路由菜单处理成一维数组，存储到 redux 中，做菜单权限判断
+	// 		const dynamicRouter = handleRouter(data);
+	// 		setAuthRouter(dynamicRouter);
+	// 		setMenuListAction(data);
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
 	useEffect(() => {
 		getMenuData();
 	}, []);

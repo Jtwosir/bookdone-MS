@@ -3,13 +3,14 @@ import { useState } from "react";
 import { Button, Form, Input, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Login } from "@/api/interface";
-import { loginApi } from "@/api/modules/login";
+// import { loginApi } from "@/api/modules/login";
 import { HOME_URL } from "@/config/config";
 import { connect } from "react-redux";
 import { setToken } from "@/redux/modules/global/action";
 import { useTranslation } from "react-i18next";
 import { setTabsList } from "@/redux/modules/tabs/action";
 import { UserOutlined, LockOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import { getTokenApi } from "@/api/modules/getKey";
 
 const LoginForm = (props: any) => {
 	const { t } = useTranslation();
@@ -23,8 +24,10 @@ const LoginForm = (props: any) => {
 		try {
 			setLoading(true);
 			loginForm.password = md5(loginForm.password);
-			const { data } = await loginApi(loginForm);
-			setToken(data?.access_token);
+			const { data } = await getTokenApi();
+			document.cookie = `Authorization=${data}; path=/; expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()};`; // 设置过期时间为7天
+			setToken(data);
+			// setToken(data?.access_token);
 			setTabsList([]);
 			message.success("登录成功！");
 			navigate(HOME_URL);

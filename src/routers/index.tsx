@@ -18,6 +18,7 @@ export const rootRouter: RouteObject[] = [
 		path: "/",
 		element: <Navigate to="/login" />
 	},
+	...routerArray,
 	{
 		path: "/login",
 		element: <Login />,
@@ -27,7 +28,6 @@ export const rootRouter: RouteObject[] = [
 			key: "login"
 		}
 	},
-	...routerArray,
 	{
 		path: "*",
 		element: <Navigate to="/404" />

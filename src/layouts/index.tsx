@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { Layout } from "antd";
 import { setAuthButtons } from "@/redux/modules/auth/action";
 import { updateCollapse } from "@/redux/modules/menu/action";
-import { getAuthorButtons } from "@/api/modules/login";
+// import { getAuthorButtons } from "@/api/modules/login";
 import { connect } from "react-redux";
 import LayoutMenu from "./components/Menu";
 import LayoutHeader from "./components/Header";
@@ -13,12 +13,12 @@ import "./index.less";
 
 const LayoutIndex = (props: any) => {
 	const { Sider, Content } = Layout;
-	const { isCollapse, updateCollapse, setAuthButtons } = props;
+	const { isCollapse, updateCollapse } = props;
 
 	// 获取按钮权限列表
 	const getAuthButtonsList = async () => {
-		const { data } = await getAuthorButtons();
-		setAuthButtons(data);
+		// const { data } = await getAuthorButtons();
+		// setAuthButtons(data);
 	};
 
 	// 监听窗口大小变化

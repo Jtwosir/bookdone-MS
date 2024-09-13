@@ -11,6 +11,9 @@ import zhCN from "antd/lib/locale/zh_CN";
 import enUS from "antd/lib/locale/en_US";
 import i18n from "i18next";
 import "moment/dist/locale/zh-cn";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 const App = (props: any) => {
 	const { language, assemblySize, themeConfig, setLanguage } = props;
@@ -36,13 +39,15 @@ const App = (props: any) => {
 	}, [language]);
 
 	return (
-		<HashRouter>
-			<ConfigProvider locale={i18nLocale} componentSize={assemblySize}>
-				<AuthRouter>
-					<Router />
-				</AuthRouter>
-			</ConfigProvider>
-		</HashRouter>
+		<QueryClientProvider client={queryClient}>
+			<HashRouter>
+				<ConfigProvider locale={i18nLocale} componentSize={assemblySize}>
+					<AuthRouter>
+						<Router />
+					</AuthRouter>
+				</ConfigProvider>
+			</HashRouter>
+		</QueryClientProvider>
 	);
 };
 
