@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Table, TableColumnsType, Form, Divider, Space, message } from "antd";
 import "./index.less";
 // @ts-ignore
 import { changeUserStatusApi, getUsersListApi } from "@/api/modules/user-admin-controller";
 import { UserList } from "@/api/interface";
 import { AdvancedSearchForm } from "@/views/customTable/usersTable/component/filterForm";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const defaultUserListQuery: UserList.ReqUserListQuery = {
 	keyVal: "",
@@ -21,23 +21,8 @@ const defaultUserListQuery: UserList.ReqUserListQuery = {
 };
 
 const UsersTable = () => {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const queryClient = useQueryClient();
-	const [userListQuery, setUserListQuery] = useState<UserList.ReqUserListQuery>({
-		keyVal: "",
-		pageNum: 0,
-		pageSize: 0,
-		phoneNumber: "",
-		sortField: "",
-		sortOrder: "",
-		status: null,
-		userId: null,
-		username: "",
-		vip: null
-	});
-	// const [setDataSource] = useState<UserList.UsersDataType[]>();
-	// const [setLoading] = useState(false);
-
+	const [userListQuery, setUserListQuery] = useState<UserList.ReqUserListQuery>(defaultUserListQuery);
 	const columns: TableColumnsType<UserList.UsersDataType> = [
 		{
 			title: "用户名",
@@ -124,7 +109,7 @@ const UsersTable = () => {
 	};
 
 	const [filterForm] = Form.useForm();
-	const { data, isLoading } = useQuery({
+	const { data, isFetching } = useQuery({
 		queryKey: ["usersData", userListQuery],
 		queryFn: () => getUsersListApi(userListQuery),
 		select: res => {
@@ -132,75 +117,44 @@ const UsersTable = () => {
 		},
 		retry: 1
 	});
-	// let usersData: UserList.UsersDataType[] | undefined = data?.records;
+	let usersData: UserList.UsersDataType[] | undefined = data?.records;
 
-	useEffect(() => {
-		// usersData = data?.records;
-		// fetchUserList();
-		// console.log(BUTTONS);
-	}, []);
-
-	const fetchUserList = async () => {
-		console.log("userListQuery of fetchUserList: ", userListQuery);
-		await queryClient.refetchQueries({ queryKey: ["usersData", userListQuery] });
-		// setLoading(true);
-		// // await getUsersListApi(userListQuery).then(res => {
-		// // 	setDataSource(handleData(res.data));
-		// // });
-		// usersData && setLoading(false);
-		// setLoading(false);
-	};
+	const { mutate, isPending } = useMutation({
+		mutationFn: async (info: { status: number; userId: number }) => {
+			await changeUserStatusApi(info);
+		},
+		onSuccess: () => {
+			message.success("操作成功");
+			queryClient.invalidateQueries({ queryKey: ["usersData"] }); // 刷新用户列表
+		},
+		onError: error => {
+			message.error("操作失败: " + error.message);
+		}
+	});
 
 	// 重置
 	const handleResetForm = () => {
-		const userListQueryTemp: UserList.ReqUserListQuery = userListQuery;
-		Object.keys(defaultUserListQuery).forEach(key => {
-			// TODO 寻求更好解决方案
-			// @ts-ignore
-			if (defaultUserListQuery[key] !== undefined) {
-				// TODO 寻求更好解决方案
-				// @ts-ignore
-				userListQueryTemp[key] = defaultUserListQuery[key];
-			}
-		});
-		setUserListQuery(defaultUserListQuery);
 		filterForm.resetFields();
-		fetchUserList();
+		const fieldsValue = filterForm.getFieldsValue();
+		setUserListQuery({
+			...fieldsValue
+		});
 	};
 
 	// 提交
 	const handleSubmit = () => {
-		// setLoading(true);
 		filterForm.validateFields();
-		// const userListQueryTemp: UserList.ReqUserListQuery = userListQuery;
 		const fieldsValue = filterForm.getFieldsValue();
-		console.log(fieldsValue, "fieldsValue");
-		Object.keys(fieldsValue).forEach(key => {
-			if (fieldsValue[key] !== undefined) {
-				// TODO 寻求更好解决方案
-				// @ts-ignore
-				userListQuery[key] = fieldsValue[key];
-			}
+		setUserListQuery({
+			...fieldsValue
 		});
-		// console.log(userListQueryTemp, "userListQueryTemp");
-		// for (let key in filterForm.getFieldsValue()) {
-		// 	if (filterForm.getFieldValue(key) !== undefined) {
-		// 		userListQueryTemp[key] = filterForm.getFieldValue(key);
-		// 	}
-		// }
-		setUserListQuery(userListQuery);
-		fetchUserList();
-		// setLoading(false);
 	};
 
 	// 修改状态
 	const handleChangeStatus = (id: number, curStatus: number, status: number) => {
 		if (curStatus === status) return message.error("当前状态与操作一致，无需操作");
 		const changedStatus = status === 1 ? 1 : 0;
-		changeUserStatusApi({ userId: id, status: changedStatus }).then(() => {
-			message.success("操作成功");
-			fetchUserList();
-		});
+		mutate({ userId: id, status: changedStatus });
 	};
 
 	return (
@@ -212,8 +166,8 @@ const UsersTable = () => {
 				id="usersTable"
 				rowKey="userId"
 				columns={columns}
-				loading={isLoading}
-				dataSource={data?.records}
+				loading={isFetching || isPending}
+				dataSource={usersData}
 				pagination={pagination}
 				scroll={{ x: 1300 }}
 				size="small"

@@ -14,7 +14,7 @@ export const getUsersListApi = (params: UserList.ReqUserListQuery) => {
  * @name 账号操作改变用户状态
  */
 export const changeUserStatusApi = (params: { status: number; userId: number }) => {
-	return http.put(PORT2 + `/status?status=${params.status}&userId=${params.userId}`, undefined, {
+	return http.put<UserList.ResUserList>(PORT2 + `/status?status=${params.status}&userId=${params.userId}`, undefined, {
 		headers: { noLoading: true, "Content-Type": "application/x-www-form-urlencoded" }
 	});
 };
