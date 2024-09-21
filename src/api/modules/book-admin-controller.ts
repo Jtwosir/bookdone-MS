@@ -7,5 +7,5 @@ import http from "@/api";
  * @name 获取用户列表模块
  */
 export const getBooksListApi = (params: BookList.ReqBookListQuery) => {
-	return http.post<BookList.ReqBookListQuery>(PORT4 + `/page`, params, { headers: { noLoading: true } });
+	return http.post<BookList.ResUserList>(PORT4 + `/page`, params, { headers: { noLoading: true } });
 };

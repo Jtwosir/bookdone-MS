@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Table, TableColumnsType, Form, Divider, Space, message } from "antd";
 import "./index.less";
-// @ts-ignore
 import { changeUserStatusApi, getUsersListApi } from "@/api/modules/user-admin-controller";
 import { UserList } from "@/api/interface";
 import { AdvancedSearchForm } from "@/views/customTable/usersTable/component/filterForm";

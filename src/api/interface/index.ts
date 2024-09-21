@@ -89,6 +89,29 @@ export namespace BookList {
 		userId: number | null;
 		userStatus: number | null;
 	}
+	export interface ResUserList {
+		records: BooksDataType[];
+		current: number;
+		pages: number;
+		size: number;
+		total: number;
+	}
+	export interface BooksDataType {
+		author: string;
+		bookId: number;
+		bookName: string;
+		bookStatus: number;
+		chapterStatus: number;
+		coverUrl: string;
+		fileHash: string;
+		fileUrl: string;
+		pageNum: number;
+		pageSize: number;
+		sortField: string;
+		sortOrder: string;
+		userId: number;
+		userStatus: number;
+	}
 }
 
 export namespace GenerateBetaKey {

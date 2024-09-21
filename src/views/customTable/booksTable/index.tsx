@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Divider, Form, Table, TableColumnsType } from "antd";
 
 import "./index.less";
 import { AdvancedSearchForm } from "@/views/customTable/booksTable/component/filterForm";
 import { getBooksListApi } from "@/api/modules/book-admin-controller";
 import { BookList } from "@/api/interface";
+import { useQuery } from "@tanstack/react-query";
 
 export interface BooksDataType {
 	author: string;
@@ -35,20 +36,18 @@ const defaultBooksListQuery: BookList.ReqBookListQuery = {
 
 const UsersTable = () => {
 	const [booksListQuery, setBooksListQuery] = useState<BookList.ReqBookListQuery>(defaultBooksListQuery);
-	const [booksData, setBooksData] = useState();
-	const [loading, setLoading] = useState(false);
 	const [filterForm] = Form.useForm();
 
 	const columns: TableColumnsType<BooksDataType> = [
 		{
-			title: "bookId",
-			dataIndex: "bookId",
+			title: "书本名",
+			dataIndex: "bookName",
 			align: "center",
 			ellipsis: true
 		},
 		{
-			title: "书本名",
-			dataIndex: "bookName",
+			title: "bookId",
+			dataIndex: "bookId",
 			align: "center",
 			ellipsis: true
 		},
@@ -117,58 +116,34 @@ const UsersTable = () => {
 		pageSize: 10
 	};
 
-	const fetchBookList = async () => {
-		setLoading(true);
-		await getBooksListApi(booksListQuery).then(res => {
-			setBooksData(handleData(res.data));
-		});
-		setLoading(false);
-	};
-
-	const handleData = (data: any) => {
-		const { records } = data;
-		// return records.map((user: BooksDataType) => ({
-		// 	...user,
-		// 	key: user.bookId
-		// }));
-		return records;
-	};
-	useEffect(() => {
-		fetchBookList();
-	}, []);
+	const { data, isFetching } = useQuery({
+		queryKey: ["booksData", booksListQuery],
+		queryFn: () => getBooksListApi(booksListQuery),
+		select: res => {
+			return res.data;
+		},
+		retry: 1
+	});
+	let booksData: BookList.BooksDataType[] | undefined = data?.records;
 
 	// 提交
 	const handleSubmit = () => {
-		setLoading(true);
 		filterForm.validateFields();
-		const userListQueryTemp: BookList.ReqBookListQuery = booksListQuery;
 		const fieldsValue = filterForm.getFieldsValue();
-		console.log(fieldsValue, "fieldsValue");
-		Object.keys(fieldsValue).forEach(key => {
-			if (fieldsValue[key] !== undefined) {
-				// TODO 寻求更好解决方案
-				// @ts-ignore
-				userListQueryTemp[key] = fieldsValue[key];
-			}
+		setBooksListQuery({
+			...fieldsValue
 		});
-		console.log(userListQueryTemp, "userListQueryTemp");
-		setBooksListQuery(userListQueryTemp);
-		fetchBookList();
-		setLoading(false);
 	};
 
 	// 重置
 	const handleResetForm = () => {
-		console.log("handleResetForm");
-		setBooksListQuery(defaultBooksListQuery);
 		filterForm.resetFields();
-		fetchBookList();
+		const fieldsValue = filterForm.getFieldsValue();
+		setBooksListQuery({
+			...fieldsValue
+		});
 	};
 
-	// 处理下拉框选择事件的函数
-	// const handleStatusChange = (value: string) => {
-	// 	console.log("处理下拉框选择事件", value);
-	// };
 	return (
 		<div className="card content-box">
 			<div className="top-title">图书管理</div>
@@ -178,7 +153,7 @@ const UsersTable = () => {
 				id="usersTable"
 				rowKey="bookId"
 				columns={columns}
-				loading={loading}
+				loading={isFetching}
 				dataSource={booksData}
 				pagination={pagination}
 				scroll={{ x: 1300 }}
