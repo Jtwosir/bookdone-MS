@@ -14,92 +14,16 @@ export const AdvancedSearchForm: React.FC<FilterFormProps> = ({ form, handleRese
 	const formItemLayout = { labelCol: { span: 6 }, wrapperCol: { span: 18 } };
 	const fields = [
 		{
-			title: "作者",
-			key: "author",
-			rules: [
-				{
-					type: "string",
-					message: "请输入用户名"
-				}
-			]
+			title: "书名",
+			key: "bookName"
 		},
 		{
 			title: "书本Id",
 			key: "bookId",
 			rules: [
 				{
-					type: "number",
-					message: "请输入用户ID"
-				}
-			]
-		},
-		{
-			title: "书名",
-			key: "bookName",
-			rules: [
-				{
-					type: "string",
-					message: "请输入内测 key"
-				}
-			]
-		},
-		{
-			title: "书本解析状态",
-			key: "bookStatus",
-			rules: [
-				{
-					type: "string",
-					message: "请输入手机号"
-				}
-			]
-		},
-		{
-			title: "章节树解析状态",
-			key: "chapterStatus",
-			rules: [
-				{
-					type: "number",
-					message: "请输入用户类型"
-				}
-			]
-		},
-		// {
-		// 	title: "原始额度",
-		// 	key: "originalQuota",
-		// 	rules: [
-		// 		{
-		// 			type: "string",
-		// 			message: "请输入原始额度"
-		// 		}
-		// 	]
-		// },
-		// {
-		// 	title: "当前额度",
-		// 	key: "currentQuota",
-		// 	rules: [
-		// 		{
-		// 			type: "string",
-		// 			message: "请输入当前额度"
-		// 		}
-		// 	]
-		// },
-		// {
-		// 	title: "书本数量",
-		// 	key: "bookNum",
-		// 	rules: [
-		// 		{
-		// 			type: "string",
-		// 			message: "请输入书本数量"
-		// 		}
-		// 	]
-		// },
-		{
-			title: "文件哈希值",
-			key: "fileHash",
-			rules: [
-				{
-					type: "string",
-					message: "请输入用户状态"
+					pattern: /^[0-9]*$/,
+					message: "需为整数"
 				}
 			]
 		},
@@ -108,13 +32,43 @@ export const AdvancedSearchForm: React.FC<FilterFormProps> = ({ form, handleRese
 			key: "userId",
 			rules: [
 				{
-					type: "string",
-					message: "请输入用户状态"
+					pattern: /^[0-9]*$/,
+					message: "需为整数"
 				}
 			]
+		},
+		{
+			title: "作者",
+			key: "author"
+		},
+		{
+			title: "书本解析状态",
+			key: "bookStatus",
+			rules: [
+				{
+					pattern: /^-1|0|1|2$/,
+					message: "必须是-1、0、1、2"
+				}
+			]
+		},
+		{
+			title: "章节树解析状态",
+			key: "chapterStatus",
+			rules: [
+				{
+					pattern: /^-1|0|1|2$/,
+					message: "必须是-1、0、1、2"
+				}
+			]
+		},
+		{
+			title: "文件哈希值",
+			key: "fileHash"
 		}
 	];
-
+	const preventBubble = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		e.preventDefault();
+	};
 	const getFields = () => {
 		const count = expand ? fields?.length ?? 0 : 6;
 		const children = [];
@@ -123,8 +77,8 @@ export const AdvancedSearchForm: React.FC<FilterFormProps> = ({ form, handleRese
 				const column = fields[i];
 				children.push(
 					<Col span={8} key={column.key}>
-						<Form.Item name={column.key} label={column.title as string}>
-							<Input placeholder={column.key as string} />
+						<Form.Item name={column.key} label={column.title as string} rules={column?.rules}>
+							<Input placeholder={column.key as string} onPressEnter={e => preventBubble(e)} />
 						</Form.Item>
 					</Col>
 				);
@@ -138,7 +92,7 @@ export const AdvancedSearchForm: React.FC<FilterFormProps> = ({ form, handleRese
 			<Row gutter={24}>{getFields()}</Row>
 			<div style={{ textAlign: "right" }}>
 				<Space size="small">
-					<Button type="primary" onClick={handleSubmit}>
+					<Button type="primary" htmlType="submit">
 						Search
 					</Button>
 					<Button onClick={handleReset}>Clear</Button>

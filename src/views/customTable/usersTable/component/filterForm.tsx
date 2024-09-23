@@ -15,41 +15,29 @@ export const AdvancedSearchForm: React.FC<FilterFormProps> = ({ form, handleRese
 	const fields = [
 		{
 			title: "用户名",
-			key: "username",
-			rules: [
-				{
-					type: "string",
-					message: "请输入用户名"
-				}
-			]
+			key: "username"
 		},
 		{
 			title: "userId",
 			key: "userId",
 			rules: [
 				{
-					type: "number",
-					message: "请输入用户ID"
+					pattern: /^[0-9]*$/,
+					message: "需为整数"
 				}
 			]
 		},
 		{
 			title: "内测 key",
-			key: "keyVal",
-			rules: [
-				{
-					type: "string",
-					message: "请输入内测 key"
-				}
-			]
+			key: "keyVal"
 		},
 		{
 			title: "手机号",
 			key: "phoneNumber",
 			rules: [
 				{
-					type: "string",
-					message: "请输入手机号"
+					pattern: /^[0-9]*$/,
+					message: "需为整数"
 				}
 			]
 		},
@@ -58,48 +46,18 @@ export const AdvancedSearchForm: React.FC<FilterFormProps> = ({ form, handleRese
 			key: "vip",
 			rules: [
 				{
-					type: "number",
-					message: "请输入用户类型"
+					pattern: /^[0-1]$/,
+					message: "必须是0或者1"
 				}
 			]
 		},
-		// {
-		// 	title: "原始额度",
-		// 	key: "originalQuota",
-		// 	rules: [
-		// 		{
-		// 			type: "string",
-		// 			message: "请输入原始额度"
-		// 		}
-		// 	]
-		// },
-		// {
-		// 	title: "当前额度",
-		// 	key: "currentQuota",
-		// 	rules: [
-		// 		{
-		// 			type: "string",
-		// 			message: "请输入当前额度"
-		// 		}
-		// 	]
-		// },
-		// {
-		// 	title: "书本数量",
-		// 	key: "bookNum",
-		// 	rules: [
-		// 		{
-		// 			type: "string",
-		// 			message: "请输入书本数量"
-		// 		}
-		// 	]
-		// },
 		{
 			title: "用户状态",
 			key: "status",
 			rules: [
 				{
-					type: "string",
-					message: "请输入用户状态"
+					pattern: /^[0-1-2-3]$/,
+					message: "必须是0、1、2、3"
 				}
 			]
 		}
@@ -115,7 +73,7 @@ export const AdvancedSearchForm: React.FC<FilterFormProps> = ({ form, handleRese
 				const column = fields[i];
 				children.push(
 					<Col span={8} key={column.key}>
-						<Form.Item name={column.key} label={column.title as string}>
+						<Form.Item name={column.key} label={column.title as string} rules={column?.rules}>
 							<Input placeholder={column.key as string} onPressEnter={e => preventBubble(e)} />
 						</Form.Item>
 					</Col>
@@ -130,7 +88,7 @@ export const AdvancedSearchForm: React.FC<FilterFormProps> = ({ form, handleRese
 			<Row gutter={24}>{getFields()}</Row>
 			<div style={{ textAlign: "right" }}>
 				<Space size="small">
-					<Button type="primary" onClick={handleSubmit}>
+					<Button type="primary" htmlType="submit">
 						Search
 					</Button>
 					<Button onClick={handleReset}>Clear</Button>

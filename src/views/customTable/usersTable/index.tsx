@@ -6,22 +6,22 @@ import { UserList } from "@/api/interface";
 import { AdvancedSearchForm } from "@/views/customTable/usersTable/component/filterForm";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const defaultUserListQuery: UserList.ReqUserListQuery = {
-	keyVal: "",
-	pageNum: 0,
-	pageSize: 0,
-	phoneNumber: "",
-	sortField: "",
-	sortOrder: "",
-	status: null,
-	userId: null,
-	username: "",
-	vip: null
-};
+// const defaultUserListQuery: UserList.ReqUserListQuery = {
+// 	keyVal: "",
+// 	pageNum: 0,
+// 	pageSize: 0,
+// 	phoneNumber: "",
+// 	sortField: "",
+// 	sortOrder: "",
+// 	status: null,
+// 	userId: null,
+// 	username: "",
+// 	vip: null
+// };
 
 const UsersTable = () => {
 	const queryClient = useQueryClient();
-	const [userListQuery, setUserListQuery] = useState<UserList.ReqUserListQuery>(defaultUserListQuery);
+	const [userListQuery, setUserListQuery] = useState({});
 	const columns: TableColumnsType<UserList.UsersDataType> = [
 		{
 			title: "用户名",
@@ -110,7 +110,7 @@ const UsersTable = () => {
 	const [filterForm] = Form.useForm();
 	const { data, isFetching } = useQuery({
 		queryKey: ["usersData", userListQuery],
-		queryFn: () => getUsersListApi(userListQuery),
+		queryFn: () => getUsersListApi(userListQuery as UserList.ReqUserListQuery),
 		select: res => {
 			return res.data;
 		},

@@ -17,25 +17,25 @@ export interface BooksDataType {
 	userId: number;
 }
 
-const defaultBooksListQuery: BookList.ReqBookListQuery = {
-	author: "",
-	bookId: null,
-	bookName: "",
-	bookStatus: null,
-	chapterStatus: null,
-	coverUrl: "",
-	fileHash: "",
-	fileUrl: "",
-	pageNum: 0,
-	pageSize: 0,
-	sortField: "",
-	sortOrder: "",
-	userId: null,
-	userStatus: null
-};
+// const defaultBooksListQuery: BookList.ReqBookListQuery = {
+// 	author: "",
+// 	bookId: null,
+// 	bookName: "",
+// 	bookStatus: null,
+// 	chapterStatus: null,
+// 	coverUrl: "",
+// 	fileHash: "",
+// 	fileUrl: "",
+// 	pageNum: 0,
+// 	pageSize: 0,
+// 	sortField: "",
+// 	sortOrder: "",
+// 	userId: null,
+// 	userStatus: null
+// };
 
 const UsersTable = () => {
-	const [booksListQuery, setBooksListQuery] = useState<BookList.ReqBookListQuery>(defaultBooksListQuery);
+	const [booksListQuery, setBooksListQuery] = useState({});
 	const [filterForm] = Form.useForm();
 
 	const columns: TableColumnsType<BooksDataType> = [
@@ -118,7 +118,7 @@ const UsersTable = () => {
 
 	const { data, isFetching } = useQuery({
 		queryKey: ["booksData", booksListQuery],
-		queryFn: () => getBooksListApi(booksListQuery),
+		queryFn: () => getBooksListApi(booksListQuery as BookList.ReqBookListQuery),
 		select: res => {
 			return res.data;
 		},
