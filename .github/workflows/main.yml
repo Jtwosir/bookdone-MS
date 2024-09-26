@@ -12,10 +12,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@main
       # 使用 node:10
-      - name: use Node.js 10
+      - name: use Node.js 20
         uses: actions/setup-node@v1
         with:
-          node-version: 10
+          node-version: 20
       # npm install
       - name: npm install and build
         run: |
