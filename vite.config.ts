@@ -44,7 +44,7 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			proxy: {
 				"/api": {
 					// target: "https://mock.mengxuegu.com/mock/62abda3212c1416424630a45", // easymock
-					target: "http://120.76.45.161:8121", // easymock
+					target: viteEnv.VITE_API_SERVER,
 					changeOrigin: true
 					// rewrite: path => path.replace(/^\/api/, "")
 				}
