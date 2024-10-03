@@ -1,10 +1,10 @@
-name: 现场环境
+name: 生产/测试环境
 
 on:
   push:
     # push 代码的时候 哪个分支会受到影响 这里是 v1.0.0 分支
     branches:
-      - main # 也可以设置为 main 分支
+      - dev # 也可以设置为 main 分支
 
 # 推送之后执行一系列的任务
 jobs:
