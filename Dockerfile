@@ -15,11 +15,11 @@ RUN npm ci
 # RUN yarn install --production # 如果使用的是 yarn
 
 # 构建项目
-RUN npm run build
+RUN npm run build:pro
 # RUN yarn build # 如果使用的是 yarn
 
 # 将端口暴露出来
-EXPOSE 3000
+EXPOSE 5000
 
 # 启动应用
 CMD ["npm", "start"]
