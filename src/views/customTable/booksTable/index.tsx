@@ -130,6 +130,11 @@ const UsersTable = () => {
 	const handleSubmit = () => {
 		filterForm.validateFields();
 		const fieldsValue = filterForm.getFieldsValue();
+		Object.keys(fieldsValue).forEach(key => {
+			if (fieldsValue[key] !== undefined) {
+				fieldsValue[key] = fieldsValue[key].trim();
+			}
+		});
 		setBooksListQuery({
 			...fieldsValue
 		});
