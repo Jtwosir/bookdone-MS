@@ -3,7 +3,7 @@ import { getBrowserLang } from "@/utils/util";
 import { ConfigProvider } from "antd";
 import { connect } from "react-redux";
 import { setLanguage } from "@/redux/modules/global/action";
-import { HashRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import AuthRouter from "@/routers/utils/authRouter";
 import Router from "@/routers/index";
 import useTheme from "@/hooks/useTheme";
@@ -14,6 +14,7 @@ import "moment/dist/locale/zh-cn";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
+const baseName = import.meta.env.VITE_BASE_PATH as string;
 
 const App = (props: any) => {
 	const { language, assemblySize, themeConfig, setLanguage } = props;
@@ -40,13 +41,13 @@ const App = (props: any) => {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<HashRouter>
+			<BrowserRouter basename={baseName}>
 				<ConfigProvider locale={i18nLocale} componentSize={assemblySize}>
 					<AuthRouter>
 						<Router />
 					</AuthRouter>
 				</ConfigProvider>
-			</HashRouter>
+			</BrowserRouter>
 		</QueryClientProvider>
 	);
 };
