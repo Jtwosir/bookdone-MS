@@ -5,6 +5,7 @@
 	"scripts": {
 		"dev": "vite",
 		"serve": "vite",
+		"start": "vite --mode production",
 		"build:dev": "tsc && vite build --mode development",
 		"build:test": "tsc && vite build --mode test",
 		"build:pro": "tsc && vite build --mode production",
