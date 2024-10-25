@@ -1,24 +1,29 @@
-# 使用官方的 Node.js 运行时作为父镜像
-FROM node:18
+# 使用官方的 Node.js 镜像作为基础镜像
+FROM node:18-alpine as builder
 
 # 设置工作目录
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# 将本地的 Vite 项目文件复制到工作目录
+# 复制 package.json 和 package-lock.json
 COPY . .
 
 # 安装依赖
-RUN npm install  --legacy-peer-deps
+RUN npm install --legacy-peer-deps
 
-# 执行 Vite 构建命令，生成 dist 目录
+# 构建生产环境
 RUN npm run build:pro
 
-# 使用 Nginx 镜像作为运行时镜像
+# 使用 Nginx 作为生产服务器
 FROM nginx:latest
 
-# 将 Vite 项目的 dist 目录复制到 Nginx 的默认静态文件目录
-COPY --from=0 /usr/src/app/dist /usr/share/nginx/html/bd-ms/
-COPY nginx.conf /etc/nginx/nginx.conf
+# 复制构建的文件到 Nginx 的默认目录
+COPY --from=builder /app/dist /usr/share/nginx/html/prod/user-manager
 
-# 暴露容器的 5000 端口
+# 复制 Nginx 配置文件
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# 暴露端口
 EXPOSE 5000
+
+# 启动 Nginx
+CMD ["nginx", "-g", "daemon off;"]
