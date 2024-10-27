@@ -21,5 +21,5 @@ import http from "@/api";
 // };
 
 export const getTokenApi = async (key: string) => {
-	return http.post(PORT2 + `/login-beta?key=${key}`);
+	return http.post(PORT2 + `/login-beta?key=${key}`, {}, { headers: { noLoading: true } });
 };
