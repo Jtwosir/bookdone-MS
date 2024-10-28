@@ -1,7 +1,11 @@
-name: Deploy To Production
+name: Docker Image CI
 
 on:
-  workflow_dispatch
+  #  push: # push 时触发ci
+  #    branches: [main] # 作用于main分支
+  # pull_request:
+  #   branches: [main]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -10,21 +14,22 @@ jobs:
     steps:
       # 拉取main分支代码
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4.1.7
+        with:
+            ref: main
 
       # 制作docker镜像并推送到阿里云容器镜像服务
       - name: build and push docker image
         run: |
           echo ${{ secrets.ALIYUN_DOCKER_PASSWORD }} | docker login ${{ vars.REGISTRY_MIRROR }} --username ${{ secrets.ALIYUN_DOCKER_USERNAME }} --password-stdin
 
-          docker image build -t ${{ vars.APP_NAME }}:latest \
-             --build-arg NEXT_PUBLIC_BUILD_TYPE=prod \
-            .
+          docker image build -t ${{ vars.APP_NAME }}:latest 
           docker tag ${{ vars.APP_NAME }} ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME }}:latest
           docker push ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME }}:latest
           docker logout
 
           echo "app name ${{ vars.REGISTRY_MIRROR }}"
+      # 登录远程服务器，拉取镜像，制作并重启容器
       # <https://github.com/marketplace/actions/remote-ssh-commands>
       - name: ssh remote deploy
         uses: fifsky/ssh-action@master
@@ -47,10 +52,10 @@ jobs:
             docker pull ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME }}:latest
 
             echo -e "6.docker container create and start==>"
-            docker container run -d -p 5000:5000 --name ${{ vars.APP_NAME }} --user 1001 ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME }}:latest
+            docker container run -d -p 5000:5000 --name ${{ vars.APP_NAME }} ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME }}:latest
 
             echo -e "7.docker logout==>"
             docker logout
-          host: ${{ secrets.REMOTE_HOST }}
-          user: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.PRIVATE_KEY }}
+          host: ${{ secrets.HOST }}
+          user: ${{ secrets.USER }}
+          pass: ${{ secrets.PASSWORD }}
