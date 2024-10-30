@@ -4,6 +4,8 @@ FROM node:18-alpine as builder
 # 设置工作目录
 WORKDIR /app
 
+ARG BUILD_TARGET
+
 # 复制 package.json 和 package-lock.json
 COPY . .
 
@@ -11,16 +13,19 @@ COPY . .
 RUN npm install --legacy-peer-deps
 
 # 构建生产环境
-RUN npm run build:pro
+RUN npm run build:$BUILD_TARGET
 
 # 使用 Nginx 作为生产服务器
 FROM nginx:latest
+
+# 定义一个构建参数
+ARG CONF_FILE
 
 # 复制构建的文件到 Nginx 的默认目录
 COPY --from=builder /app/dist /usr/share/nginx/html/prod/user-manager
 
 # 复制 Nginx 配置文件
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY $CONF_FILE /etc/nginx/conf.d/default.conf
 
 # 暴露端口
 EXPOSE 5000

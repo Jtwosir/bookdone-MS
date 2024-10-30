@@ -23,7 +23,10 @@ jobs:
         run: |
           echo ${{ secrets.ALIYUN_DOCKER_PASSWORD }} | docker login ${{ vars.REGISTRY_MIRROR }} --username ${{ secrets.ALIYUN_DOCKER_USERNAME }} --password-stdin
 
-          docker image build -t ${{ vars.APP_NAME }}:latest .
+          docker image build -t ${{ vars.APP_NAME }}:latest \
+            --build-arg CONF_FILE=nginx.prod.conf \
+            --build-arg BUILD_TARGET=pro \
+            .
           docker tag ${{ vars.APP_NAME }} ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME }}:latest
           docker push ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME }}:latest
           docker logout
@@ -58,4 +61,4 @@ jobs:
             docker logout
           host: ${{ secrets.HOST }}
           user: ${{ secrets.USER }}
-          pass: ${{ secrets.PASSWORD }}
+          pass: ${{ secrets.KEY }}
