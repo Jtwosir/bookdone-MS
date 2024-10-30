@@ -61,4 +61,4 @@ jobs:
             docker logout
           host: ${{ secrets.HOST }}
           user: ${{ secrets.USER }}
-          pass: ${{ secrets.KEY }}
+          key: ${{ secrets.KEY }}
