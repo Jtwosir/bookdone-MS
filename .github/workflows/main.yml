@@ -35,7 +35,7 @@ jobs:
       # 登录远程服务器，拉取镜像，制作并重启容器
       # <https://github.com/marketplace/actions/remote-ssh-commands>
       - name: ssh remote deploy
-        uses: fifsky/ssh-action@master
+        uses: garygrossgarten/github-action-ssh@release
         with:
           command: |
             cd /
@@ -60,5 +60,5 @@ jobs:
             echo -e "7.docker logout==>"
             docker logout
           host: ${{ secrets.HOST }}
-          user: ${{ secrets.USER }}
-          key: ${{ secrets.PRIVATE_KEY }}
+          username: ${{ secrets.USER }}
+          privateKey: ${{ secrets.PRIVATE_KEY }}
