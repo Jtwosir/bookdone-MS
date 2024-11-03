@@ -55,7 +55,7 @@ jobs:
             docker pull ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME_PRE }}:latest
 
             echo -e "6.docker container create and start==>"
-            docker container run -d -p 6000:5000 --name ${{ vars.APP_NAME_PRE }} ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME_PRE }}:latest
+            docker container run -d -p 6000:6000 --name ${{ vars.APP_NAME_PRE }} ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME_PRE }}:latest
 
             echo -e "7.docker logout==>"
             docker logout
