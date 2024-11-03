@@ -35,9 +35,9 @@ jobs:
       # 登录远程服务器，拉取镜像，制作并重启容器
       # <https://github.com/marketplace/actions/remote-ssh-commands>
       - name: ssh remote deploy
-        uses: garygrossgarten/github-action-ssh@release
+        uses: fifsky/ssh-action@master
         with:
-          script: |
+          command: |
             cd /
             echo -e "1.docker login start==>"
             echo ${{ secrets.ALIYUN_DOCKER_PASSWORD }} | docker login ${{ vars.REGISTRY_MIRROR }} --username ${{ secrets.ALIYUN_DOCKER_USERNAME }} --password-stdin
@@ -59,6 +59,6 @@ jobs:
 
             echo -e "7.docker logout==>"
             docker logout
-          host: '47.238.121.98'
-          username: root
-          privateKey: ${{ secrets.PRIVATE_KEY }}
+          host: ${{ secrets.HOST }}
+          user: ${{ secrets.USER }}
+          key: ${{ secrets.PRIVATE_KEY }}
