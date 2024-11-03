@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  #  push: # push 时触发ci
+  #    branches: [main] # 作用于main分支
+  # pull_request:
+  #   branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 拉取main分支代码
+      - name: Checkout
+        uses: actions/checkout@v4.1.7
+        with:
+            ref: main
+
+      # 制作docker镜像并推送到阿里云容器镜像服务
+      - name: build and push docker image
+        run: |
+          echo ${{ secrets.ALIYUN_DOCKER_PASSWORD }} | docker login ${{ vars.REGISTRY_MIRROR }} --username ${{ secrets.ALIYUN_DOCKER_USERNAME }} --password-stdin
+
+          docker image build -t ${{ vars.APP_NAME }}:latest \
+            --build-arg CONF_FILE=nginx.prod.conf \
+            --build-arg BUILD_TARGET=pro \
+            .
+          docker tag ${{ vars.APP_NAME }} ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME }}:latest
+          docker push ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME }}:latest
+          docker logout
+
+          echo "app name ${{ vars.REGISTRY_MIRROR }}"
+      # 登录远程服务器，拉取镜像，制作并重启容器
+      # <https://github.com/marketplace/actions/remote-ssh-commands>
+      - name: ssh remote deploy
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd /
+            echo -e "1.docker login start==>"
+            echo ${{ secrets.ALIYUN_DOCKER_PASSWORD }} | docker login ${{ vars.REGISTRY_MIRROR }} --username ${{ secrets.ALIYUN_DOCKER_USERNAME }} --password-stdin
+
+            echo -e "2.docker stop myblog container==>"
+            docker container stop ${{ vars.APP_NAME }}
+
+            echo -e "3.docker conatainer rm==>"
+            docker container rm ${{ vars.APP_NAME }}
+
+            echo -e "4.docker image rm==>"
+            docker image rm ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME }}:latest
+
+            echo -e "5.docker pull==>"
+            docker pull ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME }}:latest
+
+            echo -e "6.docker container create and start==>"
+            docker container run -d -p 5000:5000 --name ${{ vars.APP_NAME }} ${{ vars.REGISTRY_MIRROR }}/${{ vars.REGISTRY_NAMESPACE }}/${{ vars.APP_NAME }}:latest
+
+            echo -e "7.docker logout==>"
+            docker logout
+          host: ${{ secrets.HOST }}
+          user: ${{ secrets.USER }}
+          key: ${{ secrets.KEY }}
