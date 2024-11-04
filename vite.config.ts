@@ -42,11 +42,17 @@ export default defineConfig((mode: ConfigEnv): UserConfig => {
 			// https: false,
 			// 代理跨域（mock 不需要配置，这里只是个事列）
 			proxy: {
-				"/api": {
+				"/bd_ms_api/prod/api": {
 					// target: "https://mock.mengxuegu.com/mock/62abda3212c1416424630a45", // easymock
 					target: viteEnv.VITE_API_SERVER,
-					changeOrigin: true
-					// rewrite: path => path.replace(/^\/api/, "")
+					changeOrigin: true,
+					rewrite: path => path.replace(/^\/bd_ms_api\/prod/, "")
+				},
+				"/bd_ms_api/test/api": {
+					// target: "https://mock.mengxuegu.com/mock/62abda3212c1416424630a45", // easymock
+					target: viteEnv.VITE_API_SERVER,
+					changeOrigin: true,
+					rewrite: path => path.replace(/^\/bd_ms_api\/test/, "")
 				}
 			}
 		},
