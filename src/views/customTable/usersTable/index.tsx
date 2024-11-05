@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, TableColumnsType, Form, Divider, Space, message } from "antd";
+import { Table, TableColumnsType, Form, Divider, Space, message, Tag } from "antd";
 import "./index.less";
 import { changeUserStatusApi, getUsersListApi } from "@/api/modules/user-admin-controller";
 import { UserList } from "@/api/interface";
@@ -57,7 +57,8 @@ const UsersTable = () => {
 			dataIndex: "vip",
 			key: "vip",
 			align: "center",
-			ellipsis: true
+			ellipsis: true,
+			render: (value: number) => (value === 1 ? "vip" : "普通用户")
 		},
 		{
 			title: "原始额度",
@@ -85,7 +86,14 @@ const UsersTable = () => {
 			dataIndex: "status",
 			key: "status",
 			align: "center",
-			ellipsis: true
+			ellipsis: true,
+			render: (value: number) => (
+				<span>
+					<Tag color={value === 0 ? "processing" : value === 1 ? "gray" : value === 2 ? "warning" : "red"}>
+						{value === 0 ? "正常" : value === 1 ? "禁用" : value === 2 ? "锁定" : "删除"}
+					</Tag>
+				</span>
+			)
 		},
 		{
 			title: "操作",
@@ -94,8 +102,8 @@ const UsersTable = () => {
 			fixed: "right",
 			render: (_, record) => (
 				<Space>
-					<a onClick={() => handleChangeStatus(record.userId, record.status, 0)}>禁用</a>
-					<a onClick={() => handleChangeStatus(record.userId, record.status, 1)}>恢复</a>
+					<a onClick={() => handleChangeStatus(record.userId, record.status, 1)}>禁用</a>
+					<a onClick={() => handleChangeStatus(record.userId, record.status, 0)}>恢复</a>
 				</Space>
 			)
 		}

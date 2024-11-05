@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Divider, Form, Table, TableColumnsType } from "antd";
+import { Divider, Form, Table, TableColumnsType, Tag } from "antd";
 
 import "./index.less";
 import { AdvancedSearchForm } from "@/views/customTable/booksTable/component/filterForm";
@@ -16,23 +16,6 @@ export interface BooksDataType {
 	fileHash: string;
 	userId: number;
 }
-
-// const defaultBooksListQuery: BookList.ReqBookListQuery = {
-// 	author: "",
-// 	bookId: null,
-// 	bookName: "",
-// 	bookStatus: null,
-// 	chapterStatus: null,
-// 	coverUrl: "",
-// 	fileHash: "",
-// 	fileUrl: "",
-// 	pageNum: 0,
-// 	pageSize: 0,
-// 	sortField: "",
-// 	sortOrder: "",
-// 	userId: null,
-// 	userStatus: null
-// };
 
 const UsersTable = () => {
 	const [booksListQuery, setBooksListQuery] = useState({});
@@ -85,13 +68,27 @@ const UsersTable = () => {
 			title: "书本解析状态",
 			dataIndex: "bookStatus",
 			align: "center",
-			ellipsis: true
+			ellipsis: true,
+			render: (value: number) => (
+				<span>
+					<Tag color={value === -1 ? "red" : value === 0 ? "warning" : value === 1 ? "processing" : "success"}>
+						{value === -1 ? "解析失败" : value === 0 ? "未解析" : value === 1 ? "解析中" : "解析完成"}
+					</Tag>
+				</span>
+			)
 		},
 		{
 			title: "章节树解析状态",
 			dataIndex: "chapterStatus",
 			align: "center",
-			ellipsis: true
+			ellipsis: true,
+			render: (value: number) => (
+				<span>
+					<Tag color={value === -1 ? "red" : value === 0 ? "warning" : value === 1 ? "processing" : "success"}>
+						{value === -1 ? "解析失败" : value === 0 ? "未解析" : value === 1 ? "解析中" : "解析完成"}
+					</Tag>
+				</span>
+			)
 		}
 		// {
 		// 	title: "用户状态",
