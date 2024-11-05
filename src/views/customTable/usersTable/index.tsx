@@ -176,7 +176,7 @@ const UsersTable = () => {
 			<AdvancedSearchForm form={filterForm} handleReset={handleResetForm} handleSubmit={handleSubmit} />
 			<Table<UserList.UsersDataType>
 				id="usersTable"
-				rowKey="userId"
+				rowKey={(column: UserList.UsersDataType) => column.userId.toString() + column.keyVal.toString()}
 				columns={columns}
 				loading={isFetching || isPending}
 				dataSource={usersData}
